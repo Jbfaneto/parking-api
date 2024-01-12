@@ -1,4 +1,4 @@
-package config;
+package com.joaoneto.parkinglot.config;
 
 import jakarta.annotation.PostConstruct;
 import org.springframework.context.annotation.Configuration;
