@@ -15,5 +15,4 @@ public class ParkingLotApplication {
 		SpringApplication.run(ParkingLotApplication.class, args);
 		LOG.info("Application started");
 	}
-
 }
