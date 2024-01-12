@@ -5,7 +5,6 @@ import com.joaoneto.parkinglot.entities.enums.UserRole;
 import com.joaoneto.parkinglot.services.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -23,8 +22,11 @@ import static org.mockito.ArgumentMatchers.any;
 @AutoConfigureMockMvc
 public class UserControllerTest {
 
-    @Autowired
-    private MockMvc mockMvc;
+    private final MockMvc mockMvc;
+
+    public UserControllerTest(MockMvc mockMvc) {
+        this.mockMvc = mockMvc;
+    }
 
     @MockBean
     private UserService userService;
