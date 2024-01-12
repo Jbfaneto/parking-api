@@ -1,4 +1,4 @@
-package com.joaoneto.parkinglot.entityTest;
+package com.joaoneto.parkinglot.entity;
 
 import com.joaoneto.parkinglot.entities.User;
 import com.joaoneto.parkinglot.entities.enums.UserRole;
@@ -50,5 +50,6 @@ public class UserTest {
 
         String expectedString = "User{id=1}";
         assertEquals(expectedString, user.toString());
+
     }
 }
