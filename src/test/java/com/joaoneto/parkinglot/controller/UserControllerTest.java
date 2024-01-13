@@ -1,15 +1,19 @@
 package com.joaoneto.parkinglot.controller;
 
+import com.joaoneto.parkinglot.ParkingLotApplication;
 import com.joaoneto.parkinglot.entities.User;
 import com.joaoneto.parkinglot.entities.enums.UserRole;
 import com.joaoneto.parkinglot.services.UserService;
+import com.joaoneto.parkinglot.web.dtos.UserCreateRequestDto;
+import com.joaoneto.parkinglot.web.dtos.UserCreateResponseDto;
+import com.joaoneto.parkinglot.web.dtos.mappers.UserCreateRequestDtoToUserMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.hamcrest.Matchers.is;
@@ -18,44 +22,44 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.mockito.ArgumentMatchers.any;
-@SpringBootTest
+
+@SpringBootTest(classes = ParkingLotApplication.class)
 @AutoConfigureMockMvc
 public class UserControllerTest {
 
-    private final MockMvc mockMvc;
-
-    public UserControllerTest(MockMvc mockMvc) {
-        this.mockMvc = mockMvc;
-    }
+    @Autowired
+    private MockMvc mockMvc;
 
     @MockBean
     private UserService userService;
 
-    private User user;
+    private UserCreateRequestDto userCreateRequestDto;
 
     @BeforeEach
     public void setUp() {
-        user = new User();
-        user.setUsername("testUser");
-        user.setPassword("testPassword");
-        user.setRole(UserRole.ROLE_ADMIN);
+        userCreateRequestDto = new UserCreateRequestDto("testUser", "testPassword", UserRole.ROLE_ADMIN);
     }
 
     @Test
     public void testCreateUser() throws Exception {
-        User savedUser = new User();
-        savedUser.setUsername(user.getUsername());
-        savedUser.setPassword(user.getPassword());
-        savedUser.setRole(user.getRole());
+        var userFromMapper = UserCreateRequestDtoToUserMapper.build().apply(userCreateRequestDto);
 
-        when(userService.createUser(any(User.class))).thenReturn(savedUser);
+        var savedUser = createResponseDtoFromUser(userFromMapper);
+
+        when(userService.createUser(any(User.class))).thenReturn(userFromMapper);
 
         mockMvc.perform(post("/api/v1/users")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"username\":\"testUser\",\"password\":\"testPassword\", \"role\":\"ROLE_ADMIN\"}"))
+                        .content("{\"username\":\"testUser\",\"password\":\"testPassword\", \"role\":\"ROLE_ADMIN\"}")
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.username", is(savedUser.getUsername())))
-                .andExpect(jsonPath("$.role", is(savedUser.getRole().toString())));
+                .andExpect(jsonPath("$.username", is(savedUser.username())))
+                .andExpect(jsonPath("$.role", is(savedUser.role())));
+    }
+
+    private UserCreateResponseDto createResponseDtoFromUser(User user) {
+        String role = user.getRole().name().substring("ROLE_".length());
+        return new UserCreateResponseDto(user.getUsername(), role);
     }
 }
 
