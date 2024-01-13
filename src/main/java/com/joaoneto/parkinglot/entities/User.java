@@ -35,6 +35,12 @@ public class User implements Serializable {
     @Column(name = "updated_by")
     private String updatedBy;
 
+    public User(String username, String password, UserRole role) {
+        this.username = username;
+        this.password = password;
+        this.role = role;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

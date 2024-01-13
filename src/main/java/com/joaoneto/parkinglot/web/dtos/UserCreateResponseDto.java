@@ -1,2 +1,4 @@
-package com.joaoneto.parkinglot.web.dtos;public class UserCreateResponseDto {
+package com.joaoneto.parkinglot.web.dtos;
+
+public record UserCreateResponseDto (String username, String role) {
 }
