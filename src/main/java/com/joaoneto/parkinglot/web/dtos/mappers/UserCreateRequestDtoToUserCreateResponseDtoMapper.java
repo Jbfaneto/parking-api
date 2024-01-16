@@ -12,7 +12,7 @@ public class UserCreateRequestDtoToUserCreateResponseDtoMapper implements Functi
 
     @Override
     public UserCreateResponseDto apply(UserCreateRequestDto userCreateRequestDto) {
-        String role = userCreateRequestDto.role().name().substring("ROLE_".length());
+        String role = "client";
         return new UserCreateResponseDto(userCreateRequestDto.username(), role);
     }
 }

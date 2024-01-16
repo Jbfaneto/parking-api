@@ -25,7 +25,7 @@ public class User implements Serializable {
     @Column(name = "password", nullable = false, length = 200)
     private String password;
     @Column(name = "role", nullable = false, length = 25)
-    private UserRole role;
+    private UserRole role = UserRole.ROLE_CLIENT;
     @Column(name = "created_at")
     private LocalDateTime createdAt;
     @Column(name = "updated_at")
@@ -35,10 +35,9 @@ public class User implements Serializable {
     @Column(name = "updated_by")
     private String updatedBy;
 
-    public User(String username, String password, UserRole role) {
+    public User(String username, String password) {
         this.username = username;
         this.password = password;
-        this.role = role;
     }
 
     @Override

@@ -38,9 +38,8 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UpdateUserResponseDto> updatePassword(@PathVariable Long id, @RequestBody UpdateUserRequestDto input) {
-        User user = UpdateUserRequestDtoToUserMapper.build().apply(input);
-        User updatedUser = userService.updatePassword(id, user.getPassword());
+    public ResponseEntity<UpdateUserResponseDto> updatePassword(@PathVariable Long id, @RequestBody UpdateUserRequestDto user) {
+        User updatedUser = userService.updatePassword(id, user.currentPassword(), user.newPassword(), user.passwordConfirmation());
         UpdateUserResponseDto response = UserToUpdateUserResponseDtoMapper.build().apply(updatedUser);
         return ResponseEntity.ok(response);
     }

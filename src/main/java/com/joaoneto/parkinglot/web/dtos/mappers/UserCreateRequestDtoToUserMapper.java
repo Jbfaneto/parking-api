@@ -12,6 +12,6 @@ public class UserCreateRequestDtoToUserMapper implements Function <UserCreateReq
 
     @Override
     public User apply(UserCreateRequestDto user) {
-        return new User(user.username(), user.password(), user.role());
+        return new User(user.username(), user.password());
     }
 }

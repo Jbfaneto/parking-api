@@ -26,10 +26,28 @@ public class UserService {
 
 
     @Transactional
-    public User updatePassword(Long id, String password) {
+    public User updatePassword(Long id, String currentPassword, String newPassword, String passwordConfirmation) {
         User userToUpdate = getUserById(id);
-        userToUpdate.setPassword(password);
+        if (!userToUpdate.getPassword().equals(currentPassword)) {
+            throw new IllegalArgumentException("Current password does not match");
+        }
+
+        validatePassword(currentPassword, newPassword, passwordConfirmation);
+
+        userToUpdate.setPassword(newPassword);
         return userToUpdate;
+    }
+
+    private void validatePassword(String currentPassword, String newPassword, String passwordConfirmation) {
+
+        if (!newPassword.equals(passwordConfirmation)) {
+            throw new IllegalArgumentException("New password does not match password confirmation");
+        }
+
+        if (newPassword.equals(currentPassword)) {
+            throw new IllegalArgumentException("New password must be different from current password");
+        }
+
     }
 
     @Transactional(readOnly = true)
