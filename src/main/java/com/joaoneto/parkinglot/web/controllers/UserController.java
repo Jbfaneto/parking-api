@@ -47,13 +47,8 @@ public class UserController {
     @GetMapping
     public ResponseEntity<List<GetUserDto>> getAllUsers() {
         List<User> users = userService.getAllUsers();
-        List<GetUserDto> response = new ArrayList<>();
-
-        for (User user : users) {
-            GetUserDto userResponse = UserToGetUserDtoMapper.build().apply(user);
-            response.add(userResponse);
-        }
-
+        List<GetUserDto> response = ListGetUserDto.build().apply(users);
         return ResponseEntity.ok(response);
+
     }
 }
