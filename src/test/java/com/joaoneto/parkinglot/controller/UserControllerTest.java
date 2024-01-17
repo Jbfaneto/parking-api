@@ -37,7 +37,7 @@ public class UserControllerTest {
 
     @BeforeEach
     public void setUp() {
-        userCreateRequestDto = new UserCreateRequestDto("testUser", "testPassword", UserRole.ROLE_ADMIN);
+        userCreateRequestDto = new UserCreateRequestDto("testUser", "testPassword");
     }
 
     @Test
@@ -50,7 +50,7 @@ public class UserControllerTest {
 
         mockMvc.perform(post("/api/v1/users")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"username\":\"testUser\",\"password\":\"testPassword\", \"role\":\"ROLE_ADMIN\"}")
+                        .content("{\"username\":\"testUser\",\"password\":\"testPassword\"}")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.username", is(savedUser.username())))
@@ -58,7 +58,7 @@ public class UserControllerTest {
     }
 
     private UserCreateResponseDto createResponseDtoFromUser(User user) {
-        String role = user.getRole().name().substring("ROLE_".length());
+        String role = "client";
         return new UserCreateResponseDto(user.getUsername(), role);
     }
 }

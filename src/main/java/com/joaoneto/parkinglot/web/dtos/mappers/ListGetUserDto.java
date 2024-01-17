@@ -6,6 +6,7 @@ import com.joaoneto.parkinglot.web.dtos.GetUserDto;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class ListGetUserDto implements Function<List<User>, List<GetUserDto>> {
     public static ListGetUserDto build() {
@@ -14,13 +15,10 @@ public class ListGetUserDto implements Function<List<User>, List<GetUserDto>> {
 
     @Override
     public List<GetUserDto> apply(List<User> users) {
-        List<GetUserDto> response = new ArrayList<>();
-
-        for (User user : users) {
-            GetUserDto userResponse = UserToGetUserDtoMapper.build().apply(user);
-            response.add(userResponse);
-        }
-
+        List<GetUserDto> response = users.stream()
+                    .map(user -> UserToGetUserDtoMapper.build().apply(user))
+                    .collect(Collectors
+                            .toList());
         return response;
     }
 }

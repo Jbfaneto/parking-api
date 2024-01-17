@@ -4,12 +4,12 @@ import com.joaoneto.parkinglot.entities.User;
 import com.joaoneto.parkinglot.services.UserService;
 import com.joaoneto.parkinglot.web.dtos.*;
 import com.joaoneto.parkinglot.web.dtos.mappers.*;
+import jakarta.validation.Valid;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -22,7 +22,7 @@ public class UserController {
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<UserCreateResponseDto> createUser(@RequestBody UserCreateRequestDto user) {
+    public ResponseEntity<UserCreateResponseDto> createUser(@Valid @RequestBody UserCreateRequestDto user) {
         User newUser = UserCreateRequestDtoToUserMapper.build().apply(user);
         userService.createUser(newUser);
         UserCreateResponseDto response = UserCreateRequestDtoToUserCreateResponseDtoMapper.build().apply(user);
@@ -38,7 +38,7 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UpdateUserResponseDto> updatePassword(@PathVariable Long id, @RequestBody UpdateUserRequestDto user) {
+    public ResponseEntity<UpdateUserResponseDto> updatePassword(@PathVariable Long id, @Valid @RequestBody UpdateUserRequestDto user) {
         User updatedUser = userService.updatePassword(id, user.currentPassword(), user.newPassword(), user.passwordConfirmation());
         UpdateUserResponseDto response = UserToUpdateUserResponseDtoMapper.build().apply(updatedUser);
         return ResponseEntity.ok(response);

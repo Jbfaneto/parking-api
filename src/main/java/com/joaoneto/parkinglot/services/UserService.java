@@ -2,6 +2,7 @@ package com.joaoneto.parkinglot.services;
 
 import com.joaoneto.parkinglot.entities.User;
 import com.joaoneto.parkinglot.repositories.UserRepository;
+import com.joaoneto.parkinglot.services.exceptions.IllegalPasswordException;
 import com.joaoneto.parkinglot.services.exceptions.UserNotFoundException;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -41,7 +42,7 @@ public class UserService {
     private void validatePassword(String currentPassword, String newPassword, String passwordConfirmation) {
 
         if (!newPassword.equals(passwordConfirmation)) {
-            throw new IllegalArgumentException("New password does not match password confirmation");
+            throw new IllegalPasswordException("New password does not match password confirmation");
         }
 
         if (newPassword.equals(currentPassword)) {
