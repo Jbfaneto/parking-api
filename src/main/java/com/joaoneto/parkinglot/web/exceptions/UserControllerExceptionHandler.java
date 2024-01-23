@@ -2,8 +2,10 @@ package com.joaoneto.parkinglot.web.exceptions;
 
 import com.joaoneto.parkinglot.services.exceptions.IllegalPasswordException;
 import com.joaoneto.parkinglot.services.exceptions.UserNotFoundException;
+import com.joaoneto.parkinglot.services.exceptions.UsernameUniqueViolationException;
 import com.joaoneto.parkinglot.web.exceptions.exceptionBody.ExceptionResponseBody;
 import jakarta.servlet.http.HttpServletRequest;
+import org.hibernate.engine.jdbc.spi.SqlExceptionHelper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -12,7 +14,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 
-
+import java.sql.SQLException;
 import java.time.Instant;
 
 @ControllerAdvice("com.joaoneto.parkinglot.web.controllers")
@@ -68,4 +70,39 @@ public class UserControllerExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
     }
 
+    @ExceptionHandler(value = { UsernameUniqueViolationException.class })
+    protected ResponseEntity<UsernameUniqueViolationException> handleUsernameUniqueViolationException(
+            final UsernameUniqueViolationException exception,
+            final HttpServletRequest request) {
+        final var body = new ExceptionResponseBody(
+                Instant.now(),
+                HttpStatus.BAD_REQUEST.value(),
+                exception.getMessage(),
+                request.getRequestURI());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exception);
+    }
+
+    @ExceptionHandler(value = { Exception.class })
+    protected ResponseEntity<ExceptionResponseBody> handleException(
+            final Exception exception,
+            final HttpServletRequest request) {
+        final var body = new ExceptionResponseBody(
+                Instant.now(),
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                exception.getMessage(),
+                request.getRequestURI());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body);
+    }
+
+    @ExceptionHandler(value = { SQLException.class })
+    protected ResponseEntity<ExceptionResponseBody> handleSqlExceptionHelper(
+            final SQLException exception,
+            final HttpServletRequest request) {
+        final var body = new ExceptionResponseBody(
+                Instant.now(),
+                HttpStatus.BAD_REQUEST.value(),
+                exception.getMessage(),
+                request.getRequestURI());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
+    }
 }

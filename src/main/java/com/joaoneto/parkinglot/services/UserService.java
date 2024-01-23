@@ -4,6 +4,7 @@ import com.joaoneto.parkinglot.entities.User;
 import com.joaoneto.parkinglot.repositories.UserRepository;
 import com.joaoneto.parkinglot.services.exceptions.IllegalPasswordException;
 import com.joaoneto.parkinglot.services.exceptions.UserNotFoundException;
+import com.joaoneto.parkinglot.services.exceptions.UsernameUniqueViolationException;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,7 +18,13 @@ public class UserService {
 
     @Transactional
     public User createUser(User user) {
+        if (findByUsername(user.getUsername()) != null) {
+            throw new UsernameUniqueViolationException("Username already exists");
+        }
         return userRepository.save(user);
+    }
+    private User findByUsername(String username) {
+        return userRepository.findByUsername(username);
     }
 
     @Transactional(readOnly = true)
@@ -56,4 +63,6 @@ public class UserService {
         List<User> users = userRepository.findAll();
         return users;
     }
+
+
 }

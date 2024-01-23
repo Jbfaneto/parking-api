@@ -37,7 +37,7 @@ public class UserControllerTest {
 
     @BeforeEach
     public void setUp() {
-        userCreateRequestDto = new UserCreateRequestDto("testUser", "testPassword");
+        userCreateRequestDto = new UserCreateRequestDto("testUser@test.com", "testPassword");
     }
 
     @Test
@@ -50,7 +50,7 @@ public class UserControllerTest {
 
         mockMvc.perform(post("/api/v1/users")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"username\":\"testUser\",\"password\":\"testPassword\"}")
+                        .content("{\"username\":\"testUser@test.com\",\"password\":\"testPassword\"}")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.username", is(savedUser.username())))
