@@ -5,7 +5,6 @@ import com.joaoneto.parkinglot.services.exceptions.UserNotFoundException;
 import com.joaoneto.parkinglot.services.exceptions.UsernameUniqueViolationException;
 import com.joaoneto.parkinglot.web.exceptions.exceptionBody.ExceptionResponseBody;
 import jakarta.servlet.http.HttpServletRequest;
-import org.hibernate.engine.jdbc.spi.SqlExceptionHelper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -45,7 +44,6 @@ public class UserControllerExceptionHandler {
 
     @ExceptionHandler(value = { MethodArgumentNotValidException.class })
     protected ResponseEntity<ExceptionResponseBody> handleMethodArgumentNotValid(
-            final MethodArgumentNotValidException exception,
             final HttpServletRequest request,
             final BindingResult result) {
 
@@ -71,7 +69,7 @@ public class UserControllerExceptionHandler {
     }
 
     @ExceptionHandler(value = { UsernameUniqueViolationException.class })
-    protected ResponseEntity<UsernameUniqueViolationException> handleUsernameUniqueViolationException(
+    protected ResponseEntity<ExceptionResponseBody> handleUsernameUniqueViolationException(
             final UsernameUniqueViolationException exception,
             final HttpServletRequest request) {
         final var body = new ExceptionResponseBody(
@@ -79,7 +77,7 @@ public class UserControllerExceptionHandler {
                 HttpStatus.BAD_REQUEST.value(),
                 exception.getMessage(),
                 request.getRequestURI());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exception);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
     }
 
     @ExceptionHandler(value = { Exception.class })
