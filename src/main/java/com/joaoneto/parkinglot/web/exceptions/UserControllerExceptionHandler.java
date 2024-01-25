@@ -74,10 +74,10 @@ public class UserControllerExceptionHandler {
             final HttpServletRequest request) {
         final var body = new ExceptionResponseBody(
                 Instant.now(),
-                HttpStatus.BAD_REQUEST.value(),
+                HttpStatus.CONFLICT.value(),
                 exception.getMessage(),
                 request.getRequestURI());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(body);
     }
 
     @ExceptionHandler(value = { Exception.class })
