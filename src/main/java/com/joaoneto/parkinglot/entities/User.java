@@ -31,6 +31,7 @@ public class User implements Serializable {
     @Column(name = "password", nullable = false, length = 200)
     private String password;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false, length = 25)
     private UserRole role = UserRole.ROLE_CLIENT;
 
