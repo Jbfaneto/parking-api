@@ -6,10 +6,13 @@ import com.joaoneto.parkinglot.web.exceptions.exceptionBody.ExceptionResponseBod
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.reactive.server.WebTestClient;
+
+import java.util.List;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql(scripts = "/sql/users/users-insert.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -186,5 +189,18 @@ public class UserIT {
 
         org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
         org.assertj.core.api.Assertions.assertThat(responseBody.status()).isEqualTo(400);
+    }
+
+    @Test
+    public void listAllUsersWithSuccessStatus200() {
+        List<GetUserDto> responseBody = testClient.get()
+                .uri("api/v1/users")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(GetUserDto.class)
+                .returnResult().getResponseBody();
+        org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
+        org.assertj.core.api.Assertions.assertThat(responseBody.size()).isEqualTo(3);
+
     }
 }
