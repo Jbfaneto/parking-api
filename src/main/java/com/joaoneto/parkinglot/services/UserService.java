@@ -18,13 +18,18 @@ public class UserService {
 
     @Transactional
     public User createUser(User user) {
+        validateUsername(user);
+        return userRepository.save(user);
+    }
+
+    private User findByUsername(String username) {
+        return userRepository.findByUsername(username);
+    }
+
+    private void validateUsername(User user) {
         if (findByUsername(user.getUsername()) != null) {
             throw new UsernameUniqueViolationException("Username already exists");
         }
-        return userRepository.save(user);
-    }
-    private User findByUsername(String username) {
-        return userRepository.findByUsername(username);
     }
 
     @Transactional(readOnly = true)
@@ -32,27 +37,26 @@ public class UserService {
         return userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found"));
     }
 
-
     @Transactional
     public User updatePassword(Long id, String currentPassword, String newPassword, String passwordConfirmation) {
         User userToUpdate = getUserById(id);
-        if (!userToUpdate.getPassword().equals(currentPassword)) {
-            throw new IllegalArgumentException("Current password does not match");
-        }
 
-        validatePassword(currentPassword, newPassword, passwordConfirmation);
+        validatePassword(userToUpdate, currentPassword, newPassword, passwordConfirmation);
 
         userToUpdate.setPassword(newPassword);
+
         return userToUpdate;
     }
 
-    private void validatePassword(String currentPassword, String newPassword, String passwordConfirmation) {
+
+
+    private void validatePassword(User user, String currentPassword, String newPassword, String passwordConfirmation) {
 
         if (!newPassword.equals(passwordConfirmation)) {
             throw new IllegalPasswordException("New password does not match password confirmation");
         }
 
-        if (newPassword.equals(currentPassword)) {
+        if (newPassword.equals(currentPassword) && !newPassword.equals(user.getPassword())) {
             throw new IllegalArgumentException("New password must be different from current password");
         }
 
@@ -63,6 +67,5 @@ public class UserService {
         List<User> users = userRepository.findAll();
         return users;
     }
-
 
 }
