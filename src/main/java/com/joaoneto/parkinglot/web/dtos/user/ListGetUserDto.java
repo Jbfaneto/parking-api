@@ -1,4 +1,4 @@
-package com.joaoneto.parkinglot.web.dtos;
+package com.joaoneto.parkinglot.web.dtos.user;
 
 import java.util.List;
 

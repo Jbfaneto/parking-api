@@ -2,10 +2,9 @@ package com.joaoneto.parkinglot.controller;
 
 import com.joaoneto.parkinglot.ParkingLotApplication;
 import com.joaoneto.parkinglot.entities.User;
-import com.joaoneto.parkinglot.entities.enums.UserRole;
 import com.joaoneto.parkinglot.services.UserService;
-import com.joaoneto.parkinglot.web.dtos.UserCreateRequestDto;
-import com.joaoneto.parkinglot.web.dtos.UserCreateResponseDto;
+import com.joaoneto.parkinglot.web.dtos.user.UserCreateRequestDto;
+import com.joaoneto.parkinglot.web.dtos.user.UserCreateResponseDto;
 import com.joaoneto.parkinglot.web.dtos.mappers.UserCreateRequestDtoToUserMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

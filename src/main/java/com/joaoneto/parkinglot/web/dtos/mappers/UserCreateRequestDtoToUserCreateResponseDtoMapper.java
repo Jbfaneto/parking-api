@@ -1,7 +1,7 @@
 package com.joaoneto.parkinglot.web.dtos.mappers;
 
-import com.joaoneto.parkinglot.web.dtos.UserCreateRequestDto;
-import com.joaoneto.parkinglot.web.dtos.UserCreateResponseDto;
+import com.joaoneto.parkinglot.web.dtos.user.UserCreateRequestDto;
+import com.joaoneto.parkinglot.web.dtos.user.UserCreateResponseDto;
 
 import java.util.function.Function;
 

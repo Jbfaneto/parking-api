@@ -7,6 +7,11 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -18,6 +23,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "users")
+@EntityListeners(AuditingEntityListener.class)
 public class User implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
@@ -28,7 +34,7 @@ public class User implements Serializable {
     @Column(name = "username", nullable = false, unique = true, length = 100)
     private String username;
 
-    @Column(name = "password", nullable = false, length = 200)
+    @Column(name = "password", nullable = false, length = 255)
     private String password;
 
     @Enumerated(EnumType.STRING)
@@ -36,15 +42,19 @@ public class User implements Serializable {
     private UserRole role = UserRole.ROLE_CLIENT;
 
     @Column(name = "created_at")
+    @CreatedDate
     private LocalDateTime createdAt;
 
     @Column(name = "updated_at")
+    @LastModifiedDate
     private LocalDateTime updatedAt;
 
     @Column(name = "created_by")
+    @CreatedBy
     private String createdBy;
 
     @Column(name = "updated_by")
+    @LastModifiedBy
     private String updatedBy;
 
     public User(String username, String password) {

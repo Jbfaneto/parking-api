@@ -1,12 +1,11 @@
 package com.joaoneto.parkinglot;
 
 
-import com.joaoneto.parkinglot.web.dtos.*;
+import com.joaoneto.parkinglot.web.dtos.user.*;
 import com.joaoneto.parkinglot.web.exceptions.exceptionBody.ExceptionResponseBody;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
@@ -24,7 +23,7 @@ public class UserIT {
 
     @Test
     public void createUserWithSuccessStatus201() {
-        UserCreateResponseDto  responseBody = testClient.post()
+        UserCreateResponseDto responseBody = testClient.post()
                 .uri("api/v1/users")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(new UserCreateRequestDto("tody@gmail.com", "123456"))

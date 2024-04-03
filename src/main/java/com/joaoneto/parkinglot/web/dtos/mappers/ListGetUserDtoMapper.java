@@ -1,7 +1,7 @@
 package com.joaoneto.parkinglot.web.dtos.mappers;
 
 import com.joaoneto.parkinglot.entities.User;
-import com.joaoneto.parkinglot.web.dtos.GetUserDto;
+import com.joaoneto.parkinglot.web.dtos.user.GetUserDto;
 
 import java.util.List;
 import java.util.function.Function;

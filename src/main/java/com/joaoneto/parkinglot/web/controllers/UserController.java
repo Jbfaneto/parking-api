@@ -2,8 +2,8 @@ package com.joaoneto.parkinglot.web.controllers;
 
 import com.joaoneto.parkinglot.entities.User;
 import com.joaoneto.parkinglot.services.UserService;
-import com.joaoneto.parkinglot.web.dtos.*;
 import com.joaoneto.parkinglot.web.dtos.mappers.*;
+import com.joaoneto.parkinglot.web.dtos.user.*;
 import com.joaoneto.parkinglot.web.exceptions.exceptionBody.ExceptionResponseBody;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -54,6 +55,7 @@ public class UserController {
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponseBody.class)))
             })
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN') OR (hasRole('CLIENT') AND #id == authentication.principal.id)")
     public ResponseEntity<GetUserDto> getUserById(@PathVariable Long id) {
         User user = userService.getUserById(id);
         GetUserDto response = UserToGetUserDtoMapper.build().apply(user);
@@ -72,6 +74,7 @@ public class UserController {
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponseBody.class)))
             })
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN, CLIENT') AND #id = authentication.principal.id")
     public ResponseEntity<UpdateUserResponseDto> updatePassword(@PathVariable Long id, @Valid @RequestBody UpdateUserRequestDto user) {
         User updatedUser = userService.updatePassword(id, user.currentPassword(), user.newPassword(), user.passwordConfirmation());
         UpdateUserResponseDto response = UserToUpdateUserResponseDtoMapper.build().apply(updatedUser);
@@ -85,6 +88,7 @@ public class UserController {
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ListGetUserDto.class))),
             })
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<GetUserDto>> getAllUsers() {
         List<User> users = userService.getAllUsers();
         List<GetUserDto>response = ListGetUserDtoMapper.build().apply(users);
