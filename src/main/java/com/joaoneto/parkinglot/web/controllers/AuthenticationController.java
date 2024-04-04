@@ -4,6 +4,9 @@ import com.joaoneto.parkinglot.jwt.JwtDetailsService;
 import com.joaoneto.parkinglot.jwt.JwtToken;
 import com.joaoneto.parkinglot.web.dtos.authentication.UserLoginDto;
 import com.joaoneto.parkinglot.web.exceptions.exceptionBody.ExceptionResponseBody;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 
-
+@Tag(name = "Auth", description = "Authentication controller for login and logout operations")
 @Slf4j
 @RequestMapping("/api/v1")
 @RequiredArgsConstructor
@@ -29,6 +32,13 @@ public class AuthenticationController {
     private final JwtDetailsService jwtDetailsService;
     private final AuthenticationManager authenticationManager;
 
+    @Operation(summary = "Authenticate user", description = "Create a bearer token to authenticate a user",
+            tags = {"Auth"}, responses = {
+            @ApiResponse(responseCode = "200", description = "User authenticated",
+                    content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json", schema = @io.swagger.v3.oas.annotations.media.Schema(implementation = JwtToken.class))),
+            @ApiResponse(responseCode = "400", description = "Invalid credentials",
+                    content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json", schema = @io.swagger.v3.oas.annotations.media.Schema(implementation = ExceptionResponseBody.class)))
+            })
     @PostMapping("/auth")
     public ResponseEntity<?> authentication(@RequestBody @Valid UserLoginDto userLoginDto, HttpServletRequest request) {
         System.out.println(userLoginDto.username());
