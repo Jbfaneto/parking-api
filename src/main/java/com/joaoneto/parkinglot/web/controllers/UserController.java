@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.MediaType;
@@ -47,11 +48,16 @@ public class UserController {
         return ResponseEntity.created(uri).body(response);
     }
 
-    @Operation(summary = "Get user by id", description = "Get user by id",
+    @Operation(summary = "Get user by id", description = "Operation requires a bearer token to access it",
+            security = @SecurityRequirement(name = "security"),
             tags = {"Users"}, responses = {
             @ApiResponse(responseCode = "200", description = "User found",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = GetUserDto.class))),
             @ApiResponse(responseCode = "404", description = "User not found",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponseBody.class))),
+            @ApiResponse(responseCode = "403", description = "Forbidden access",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponseBody.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized access",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponseBody.class)))
             })
     @GetMapping("/{id}")
@@ -62,7 +68,8 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
-    @Operation(summary = "Update user password", description = "Update user password",
+    @Operation(summary = "Update user password", description = "Operation requires a bearer token to access it",
+            security = @SecurityRequirement(name = "security"),
             tags = {"Users"}, responses = {
             @ApiResponse(responseCode = "200", description = "User password updated",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = UpdateUserResponseDto.class))),
@@ -71,21 +78,30 @@ public class UserController {
             @ApiResponse(responseCode = "400", description = "Password confirmation does not match",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponseBody.class))),
             @ApiResponse(responseCode = "400", description = "Invalid password",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponseBody.class))),
+            @ApiResponse(responseCode = "403", description = "Forbidden access",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponseBody.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized access",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponseBody.class)))
             })
+
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN, CLIENT') AND #id = authentication.principal.id")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CLIENT') AND (#id == authentication.principal.id)")
     public ResponseEntity<UpdateUserResponseDto> updatePassword(@PathVariable Long id, @Valid @RequestBody UpdateUserRequestDto user) {
         User updatedUser = userService.updatePassword(id, user.currentPassword(), user.newPassword(), user.passwordConfirmation());
         UpdateUserResponseDto response = UserToUpdateUserResponseDtoMapper.build().apply(updatedUser);
         return ResponseEntity.ok(response);
     }
 
-
-    @Operation(summary = "Get all users", description = "Get all users",
+    @Operation(summary = "Get all users", description = "Operation requires a bearer token to access it and only admin users can access it",
+            security = @SecurityRequirement(name = "security"),
             tags = {"Users"}, responses = {
             @ApiResponse(responseCode = "200", description = "Users found",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ListGetUserDto.class))),
+            @ApiResponse(responseCode = "403", description = "Forbidden access",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponseBody.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized access",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponseBody.class)))
             })
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")

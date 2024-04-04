@@ -27,15 +27,12 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
         String token = request.getHeader(JwtUtils.JWT_AUTHORIZATION);
-        log.info("Token: {}",token);
         if (token == null || !token.startsWith(JwtUtils.JWT_BEARER)) {
-            log.info("Token not found or invalid");
             filterChain.doFilter(request, response);
             return;
         }
 
         if (!JwtUtils.isTokenValid(token)) {
-            log.warn("Token is invalid or expired");
             filterChain.doFilter(request, response);
             return;
         }

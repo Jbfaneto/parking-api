@@ -17,10 +17,20 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
+
 @Configuration
 @EnableWebMvc
 @EnableMethodSecurity
 public class SpringSecurityConfig {
+
+    private static final String[] DOCUMENTATION_OPENAI = {
+            "/docs/index.html",
+            "/docs-park.html",
+            "/docs-park/**",
+            "/v3/api-docs/**",
+            "swagger-ui-custom.html", "/swagger-ui/**", "/swagger-ui.html",
+            "/**.html", "/webjars/**", "/configuration/**", "/swagger-resources/**"
+    };
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -28,18 +38,18 @@ public class SpringSecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .formLogin(formLogin -> formLogin.disable())
                 .httpBasic(httpBasic -> httpBasic.disable())
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(AntPathRequestMatcher.antMatcher(HttpMethod.POST, "/api/v1/users")).permitAll()
-                        .requestMatchers(AntPathRequestMatcher.antMatcher(HttpMethod.POST, "/api/v1/auth")).permitAll()
-                        .anyRequest().authenticated()
-                ).sessionManagement(
-                        session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                ).addFilterBefore(
-                        jwtAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class
-                ).exceptionHandling(ex -> ex
-                        .authenticationEntryPoint(new JwtAuthenticationEntryPoint())
-                ).build();
-
+                .authorizeHttpRequests(auth -> {
+                    auth.requestMatchers(AntPathRequestMatcher.antMatcher(HttpMethod.POST, "/api/v1/users")).permitAll()
+                            .requestMatchers(AntPathRequestMatcher.antMatcher(HttpMethod.POST, "/api/v1/auth")).permitAll();
+                    for (String path : DOCUMENTATION_OPENAI) {
+                        auth.requestMatchers(new AntPathRequestMatcher(path, HttpMethod.GET.name())).permitAll();
+                    }
+                    auth.anyRequest().authenticated();
+                })
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .addFilterBefore(jwtAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class)
+                .exceptionHandling(ex -> ex.authenticationEntryPoint(new JwtAuthenticationEntryPoint()))
+                .build();
     }
 
     @Bean
