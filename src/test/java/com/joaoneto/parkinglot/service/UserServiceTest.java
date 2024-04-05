@@ -31,7 +31,7 @@ public class UserServiceTest {
     @Test
     public void shouldCreateUser(){
         //arrange
-        user = new User(1l, "João", "1234567", UserRole.ROLE_ADMIN, null, null, null, null);
+        user = new User(1l, "João", "123456", UserRole.ROLE_ADMIN, null, null, null, null);
         // act
         userRepository.save(user);
 

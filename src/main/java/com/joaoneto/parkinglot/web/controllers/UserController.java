@@ -73,8 +73,6 @@ public class UserController {
             tags = {"Users"}, responses = {
             @ApiResponse(responseCode = "200", description = "User password updated",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = UpdateUserResponseDto.class))),
-            @ApiResponse(responseCode = "404", description = "User not found",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponseBody.class))),
             @ApiResponse(responseCode = "400", description = "Password confirmation does not match",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponseBody.class))),
             @ApiResponse(responseCode = "400", description = "Invalid password",
