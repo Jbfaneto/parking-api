@@ -9,6 +9,8 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class ClientService {
@@ -23,7 +25,7 @@ public class ClientService {
         }
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public Client findClientById(Long id) {
         try{
             return clientRepository.findById(id).orElseThrow();
@@ -32,4 +34,8 @@ public class ClientService {
         }
     }
 
+    @Transactional(readOnly = true)
+    public List<Client> findAllClients() {
+        return clientRepository.findAll();
+    }
 }
