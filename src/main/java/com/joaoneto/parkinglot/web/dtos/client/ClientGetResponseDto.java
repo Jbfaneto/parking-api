@@ -6,6 +6,6 @@ public record ClientGetResponseDto(
         long id,
         String name,
         String cpf,
-        User user
+        String username
 ) {
 }

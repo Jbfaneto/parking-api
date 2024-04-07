@@ -16,7 +16,7 @@ public class ClientToClientGetResponseDtoMapper implements Function<Client, Clie
                 client.getId(),
                 client.getName(),
                 client.getCpf(),
-                client.getUser()
+                client.getUser().getUsername()
         );
     }
 }
