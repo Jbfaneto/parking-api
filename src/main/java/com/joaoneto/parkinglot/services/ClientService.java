@@ -2,6 +2,7 @@ package com.joaoneto.parkinglot.services;
 
 import com.joaoneto.parkinglot.entities.Client;
 import com.joaoneto.parkinglot.repositories.ClientRepository;
+import com.joaoneto.parkinglot.services.exceptions.ClientNotFoundException;
 import com.joaoneto.parkinglot.services.exceptions.CpfUniqueViolationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -19,6 +20,15 @@ public class ClientService {
             return clientRepository.save(client);
         } catch (DataIntegrityViolationException ex) {
             throw new CpfUniqueViolationException(String.format("CPF %s already exists in the database.", client.getCpf()));
+        }
+    }
+
+    @Transactional
+    public Client findClientById(Long id) {
+        try{
+            return clientRepository.findById(id).orElseThrow();
+        } catch (Exception ex) {
+            throw new ClientNotFoundException("Client not found");
         }
     }
 

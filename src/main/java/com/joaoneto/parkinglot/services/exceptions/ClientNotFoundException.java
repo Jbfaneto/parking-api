@@ -1,6 +1,7 @@
-package com.joaoneto.parkinglot.services;
+package com.joaoneto.parkinglot.services.exceptions;
 
-public class ClientNotFoundException extends Throwable {
-    public ClientNotFoundException(String clientNotFound) {
+public class ClientNotFoundException extends RuntimeException {
+    public ClientNotFoundException(String message) {
+        super(message);
     }
 }

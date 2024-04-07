@@ -1,9 +1,6 @@
 package com.joaoneto.parkinglot.web.exceptions;
 
-import com.joaoneto.parkinglot.services.exceptions.CpfUniqueViolationException;
-import com.joaoneto.parkinglot.services.exceptions.IllegalPasswordException;
-import com.joaoneto.parkinglot.services.exceptions.UserNotFoundException;
-import com.joaoneto.parkinglot.services.exceptions.UsernameUniqueViolationException;
+import com.joaoneto.parkinglot.services.exceptions.*;
 import com.joaoneto.parkinglot.web.exceptions.exceptionBody.ExceptionResponseBody;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
@@ -31,6 +28,19 @@ public class ApiExceptionHandler {
                 request.getRequestURI());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
     }
+
+    @ExceptionHandler(value = {ClientNotFoundException.class})
+    protected ResponseEntity<ExceptionResponseBody> handleClientNotFoundException(
+            final ClientNotFoundException exception,
+            final HttpServletRequest request) {
+        final var body = new ExceptionResponseBody(
+                Instant.now(),
+                HttpStatus.NOT_FOUND.value(),
+                exception.getMessage(),
+                request.getRequestURI());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
+    }
+
 
     @ExceptionHandler(value = {IllegalPasswordException.class})
     protected ResponseEntity<ExceptionResponseBody> handleIllegalPasswordException(

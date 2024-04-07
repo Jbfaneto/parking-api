@@ -2,6 +2,7 @@ package com.joaoneto.parkinglot;
 
 import com.joaoneto.parkinglot.web.dtos.client.ClientCreateRequestDto;
 import com.joaoneto.parkinglot.web.dtos.client.ClientCreateResponseDto;
+import com.joaoneto.parkinglot.web.dtos.client.ClientGetResponseDto;
 import com.joaoneto.parkinglot.web.exceptions.exceptionBody.ExceptionResponseBody;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -102,4 +103,61 @@ public class ClientIT {
         org.assertj.core.api.Assertions.assertThat(status).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
 
+    @Test
+    public void testGetClientWithSuccess() {
+        ClientGetResponseDto response = client
+                .get()
+                .uri("/api/v1/clients/10")
+                .headers(JwtAuthentication.getHeaderAuthorization(client, "admin@email.com", "123456"))
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(ClientGetResponseDto.class)
+                .returnResult().getResponseBody();
+
+        org.assertj.core.api.Assertions.assertThat(response).isNotNull();
+        org.assertj.core.api.Assertions.assertThat(response.id()).isEqualTo(10);
+        org.assertj.core.api.Assertions.assertThat(response.name()).isEqualTo("Barbara Mayers");
+    }
+
+    @Test
+    public void testGetClientNotFound() {
+        ExceptionResponseBody response = client
+                .get()
+                .uri("/api/v1/clients/100")
+                .headers(JwtAuthentication.getHeaderAuthorization(client, "admin@email.com", "123456"))
+                .exchange()
+                .expectStatus().isNotFound()
+                .expectBody(ExceptionResponseBody.class)
+                .returnResult().getResponseBody();
+
+        org.assertj.core.api.Assertions.assertThat(response).isNotNull();
+        org.assertj.core.api.Assertions.assertThat(response.status()).isEqualTo(404);
+    }
+
+    @Test
+    public void testGetClientForbidden() {
+        ExceptionResponseBody response = client
+                .get()
+                .uri("/api/v1/clients/10")
+                .headers(JwtAuthentication.getHeaderAuthorization(client, "nome1@email.com", "123456"))
+                .exchange()
+                .expectStatus().isForbidden()
+                .expectBody(ExceptionResponseBody.class)
+                .returnResult().getResponseBody();
+
+        org.assertj.core.api.Assertions.assertThat(response).isNotNull();
+        org.assertj.core.api.Assertions.assertThat(response.status()).isEqualTo(403);
+    }
+
+    @Test
+    public void testGetClientUnauthorized() {
+        WebTestClient.ResponseSpec response = client
+                .get()
+                .uri("/api/v1/clients/10")
+                .exchange()
+                .expectStatus().isUnauthorized();
+
+        HttpStatusCode status = response.returnResult(Object.class).getStatus();
+        org.assertj.core.api.Assertions.assertThat(status).isEqualTo(HttpStatus.UNAUTHORIZED);
+    }
 }

@@ -6,8 +6,10 @@ import com.joaoneto.parkinglot.services.ClientService;
 import com.joaoneto.parkinglot.services.UserService;
 import com.joaoneto.parkinglot.web.dtos.client.ClientCreateRequestDto;
 import com.joaoneto.parkinglot.web.dtos.client.ClientCreateResponseDto;
+import com.joaoneto.parkinglot.web.dtos.client.ClientGetResponseDto;
 import com.joaoneto.parkinglot.web.dtos.client.mappers.ClientCreateRequestDtoToClientMapper;
 import com.joaoneto.parkinglot.web.dtos.client.mappers.ClientToClientCreateResponseDtoMapper;
+import com.joaoneto.parkinglot.web.dtos.client.mappers.ClientToClientGetResponseDtoMapper;
 import com.joaoneto.parkinglot.web.exceptions.exceptionBody.ExceptionResponseBody;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -19,10 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 @Tag(name = "Clients", description = "Client controller for creating and getting clients")
@@ -34,7 +33,7 @@ public class ClientController {
     private final ClientService clientService;
     private final UserService userService;
 
-    @Operation(summary = "Create a new client", description = "Resource to create a new client binded to a user. " +
+    @Operation(summary = "Create a new client", description = "Resource to create a new client bound to a user. " +
     "Operation requires a bearer token to access it",
     responses = {
             @ApiResponse(responseCode = "201", description = "Client created with success",
@@ -50,7 +49,7 @@ public class ClientController {
     @PostMapping
     @PreAuthorize("hasRole('CLIENT')")
     public ResponseEntity<ClientCreateResponseDto> createClient(@RequestBody @Valid ClientCreateRequestDto client,
-                                                                @AuthenticationPrincipal JwtUserDetails userDetails){
+                                                                @AuthenticationPrincipal JwtUserDetails userDetails) {
 
         Client newClient = ClientCreateRequestDtoToClientMapper.build().apply(client);
         newClient.setUser(userService.getUserById(userDetails.getId()));
@@ -59,6 +58,26 @@ public class ClientController {
         URI uri = URI.create(String.format("/api/v1/clients/%s", response.id()));
 
         return ResponseEntity.created(uri).body(response);
+    }
+
+
+    @Operation(summary = "Get a client by id", description = "Resource to get a client by id. " +
+    "Operation requires a bearer token to access it with ADMIN Role",
+    responses = {
+            @ApiResponse(responseCode = "200", description = "Client Found with success",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ClientGetResponseDto.class))),
+            @ApiResponse(responseCode = "404", description = "Client not found",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponseBody.class))),
+            @ApiResponse(responseCode = "403", description = "Forbidden access",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponseBody.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized access")
+    })
+    @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ClientGetResponseDto> getClient(@PathVariable Long id) {
+        Client client = clientService.findClientById(id);
+        ClientGetResponseDto response = ClientToClientGetResponseDtoMapper.build().apply(client);
+        return ResponseEntity.ok(response);
     }
 
 }
