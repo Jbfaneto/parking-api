@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.reactive.server.WebTestClient;
@@ -85,6 +86,20 @@ public class ClientIT {
 
         org.assertj.core.api.Assertions.assertThat(response).isNotNull();
         org.assertj.core.api.Assertions.assertThat(response.status()).isEqualTo(409);
+    }
+
+    @Test
+    public void testCreateClientUnauthorized() {
+        WebTestClient.ResponseSpec response = client
+                .post()
+                .uri("/api/v1/clients")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(new ClientCreateRequestDto("toby stewart", "05517610080"))
+                .exchange()
+                .expectStatus().isUnauthorized();
+
+        HttpStatusCode status = response.returnResult(Object.class).getStatus();
+        org.assertj.core.api.Assertions.assertThat(status).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
 
 }
