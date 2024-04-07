@@ -1,4 +1,4 @@
-package com.joaoneto.parkinglot.web.dtos.mappers;
+package com.joaoneto.parkinglot.web.dtos.user.mappers;
 
 import com.joaoneto.parkinglot.entities.User;
 import com.joaoneto.parkinglot.web.dtos.user.UpdateUserResponseDto;

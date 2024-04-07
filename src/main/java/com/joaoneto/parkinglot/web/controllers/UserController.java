@@ -2,8 +2,8 @@ package com.joaoneto.parkinglot.web.controllers;
 
 import com.joaoneto.parkinglot.entities.User;
 import com.joaoneto.parkinglot.services.UserService;
-import com.joaoneto.parkinglot.web.dtos.mappers.*;
 import com.joaoneto.parkinglot.web.dtos.user.*;
+import com.joaoneto.parkinglot.web.dtos.user.mappers.*;
 import com.joaoneto.parkinglot.web.exceptions.exceptionBody.ExceptionResponseBody;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;

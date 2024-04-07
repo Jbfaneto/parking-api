@@ -1,5 +1,6 @@
 package com.joaoneto.parkinglot.web.exceptions;
 
+import com.joaoneto.parkinglot.services.exceptions.CpfUniqueViolationException;
 import com.joaoneto.parkinglot.services.exceptions.IllegalPasswordException;
 import com.joaoneto.parkinglot.services.exceptions.UserNotFoundException;
 import com.joaoneto.parkinglot.services.exceptions.UsernameUniqueViolationException;
@@ -18,7 +19,7 @@ import java.sql.SQLException;
 import java.time.Instant;
 
 @ControllerAdvice("com.joaoneto.parkinglot.web.controllers")
-public class UserControllerExceptionHandler {
+public class ApiExceptionHandler {
     @ExceptionHandler(value = {UserNotFoundException.class})
     protected ResponseEntity<ExceptionResponseBody> handleUserNotFoundException(
             final UserNotFoundException exception,
@@ -80,6 +81,18 @@ public class UserControllerExceptionHandler {
                 request.getRequestURI());
         return ResponseEntity.status(HttpStatus.CONFLICT).body(body);
     }
+    @ExceptionHandler(value = {CpfUniqueViolationException.class})
+    protected ResponseEntity<ExceptionResponseBody> handleCpfUniqueViolationException(
+            final CpfUniqueViolationException exception,
+            final HttpServletRequest request) {
+    final var body = new ExceptionResponseBody(
+            Instant.now(),
+            HttpStatus.CONFLICT.value(),
+            exception.getMessage(),
+            request.getRequestURI());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(body);
+    }
+
 
     @ExceptionHandler(value = {AccessDeniedException.class})
     protected ResponseEntity<ExceptionResponseBody> handleAccessDeniedException(

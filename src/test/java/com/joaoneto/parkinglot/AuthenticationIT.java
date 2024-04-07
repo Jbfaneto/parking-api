@@ -48,6 +48,5 @@ public class AuthenticationIT {
 
         org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
         org.assertj.core.api.Assertions.assertThat(responseBody.status()).isEqualTo(400);
-
     }
 }

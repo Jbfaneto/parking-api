@@ -5,7 +5,7 @@ import com.joaoneto.parkinglot.entities.User;
 import com.joaoneto.parkinglot.services.UserService;
 import com.joaoneto.parkinglot.web.dtos.user.UserCreateRequestDto;
 import com.joaoneto.parkinglot.web.dtos.user.UserCreateResponseDto;
-import com.joaoneto.parkinglot.web.dtos.mappers.UserCreateRequestDtoToUserMapper;
+import com.joaoneto.parkinglot.web.dtos.user.mappers.UserCreateRequestDtoToUserMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
