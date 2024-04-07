@@ -8,6 +8,12 @@ import com.joaoneto.parkinglot.web.dtos.client.ClientCreateRequestDto;
 import com.joaoneto.parkinglot.web.dtos.client.ClientCreateResponseDto;
 import com.joaoneto.parkinglot.web.dtos.client.mappers.ClientCreateRequestDtoToClientMapper;
 import com.joaoneto.parkinglot.web.dtos.client.mappers.ClientToClientCreateResponseDtoMapper;
+import com.joaoneto.parkinglot.web.exceptions.exceptionBody.ExceptionResponseBody;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +25,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
-
+@Tag(name = "Clients", description = "Client controller for creating and getting clients")
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("api/v1/clients")
@@ -27,6 +33,19 @@ public class ClientController {
 
     private final ClientService clientService;
     private final UserService userService;
+
+    @Operation(summary = "Create a new client", description = "Resource to create a new client binded to a user. " +
+    "Operation requires a bearer token to access it",
+    responses = {
+            @ApiResponse(responseCode = "201", description = "Client created with success",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ClientCreateResponseDto.class))),
+            @ApiResponse(responseCode = "409", description = "Client CPF already exists",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponseBody.class))),
+            @ApiResponse(responseCode = "400", description = "Invalid CPF or name",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponseBody.class))),
+            @ApiResponse(responseCode = "403", description = "Forbidden access",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponseBody.class)))
+    })
 
     @PostMapping
     @PreAuthorize("hasRole('CLIENT')")
