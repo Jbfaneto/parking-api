@@ -175,4 +175,30 @@ public class ClientIT {
 
         org.assertj.core.api.Assertions.assertThat(response).isNotNull();
     }
+    @Test
+    public void testGetAllClientsUnauthorized(){
+        WebTestClient.ResponseSpec response = client
+                .get()
+                .uri("/api/v1/clients")
+                .exchange()
+                .expectStatus().isUnauthorized();
+
+        HttpStatusCode status = response.returnResult(Object.class).getStatus();
+        org.assertj.core.api.Assertions.assertThat(status).isEqualTo(HttpStatus.UNAUTHORIZED);
+    }
+
+    @Test
+    public void testGetAllClientsForbidden() {
+        ExceptionResponseBody response = client
+                .get()
+                .uri("/api/v1/clients")
+                .headers(JwtAuthentication.getHeaderAuthorization(client, "nome1@email.com", "123456"))
+                .exchange()
+                .expectStatus().isForbidden()
+                .expectBody(ExceptionResponseBody.class)
+                .returnResult().getResponseBody();
+
+        org.assertj.core.api.Assertions.assertThat(response).isNotNull();
+        org.assertj.core.api.Assertions.assertThat(response.status()).isEqualTo(HttpStatus.FORBIDDEN.value());
+    }
 }
