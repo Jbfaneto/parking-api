@@ -27,11 +27,8 @@ public class ClientService {
 
     @Transactional(readOnly = true)
     public Client findClientById(Long id) {
-        try{
-            return clientRepository.findById(id).orElseThrow();
-        } catch (Exception ex) {
-            throw new ClientNotFoundException("Client not found");
-        }
+            return clientRepository.findById(id).orElseThrow(() -> new ClientNotFoundException("Client not found"));
+
     }
 
     @Transactional(readOnly = true)
