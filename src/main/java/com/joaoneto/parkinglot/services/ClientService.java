@@ -6,6 +6,8 @@ import com.joaoneto.parkinglot.services.exceptions.ClientNotFoundException;
 import com.joaoneto.parkinglot.services.exceptions.CpfUniqueViolationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,11 +30,10 @@ public class ClientService {
     @Transactional(readOnly = true)
     public Client findClientById(Long id) {
             return clientRepository.findById(id).orElseThrow(() -> new ClientNotFoundException("Client not found"));
-
     }
 
     @Transactional(readOnly = true)
-    public List<Client> findAllClients() {
-        return clientRepository.findAll();
+    public Page<Client> findAllClients(Pageable pageable) {
+        return clientRepository.findAll(pageable);
     }
 }

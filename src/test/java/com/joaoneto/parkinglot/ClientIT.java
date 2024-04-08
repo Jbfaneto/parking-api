@@ -7,6 +7,7 @@ import com.joaoneto.parkinglot.web.exceptions.exceptionBody.ExceptionResponseBod
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
@@ -159,5 +160,19 @@ public class ClientIT {
 
         HttpStatusCode status = response.returnResult(Object.class).getStatus();
         org.assertj.core.api.Assertions.assertThat(status).isEqualTo(HttpStatus.UNAUTHORIZED);
+    }
+
+    @Test
+    public void testGetAllClientsWithSuccess() {
+        PageDto<ClientGetResponseDto> response = client
+                .get()
+                .uri("/api/v1/clients")
+                .headers(JwtAuthentication.getHeaderAuthorization(client, "admin@email.com", "123456"))
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(new ParameterizedTypeReference<PageDto<ClientGetResponseDto>>() {})
+                .returnResult().getResponseBody();
+
+        org.assertj.core.api.Assertions.assertThat(response).isNotNull();
     }
 }

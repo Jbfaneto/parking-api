@@ -7,10 +7,11 @@ import com.joaoneto.parkinglot.services.UserService;
 import com.joaoneto.parkinglot.web.dtos.client.ClientCreateRequestDto;
 import com.joaoneto.parkinglot.web.dtos.client.ClientCreateResponseDto;
 import com.joaoneto.parkinglot.web.dtos.client.ClientGetResponseDto;
+import com.joaoneto.parkinglot.web.dtos.client.PageGetClientDto;
 import com.joaoneto.parkinglot.web.dtos.client.mappers.ClientCreateRequestDtoToClientMapper;
 import com.joaoneto.parkinglot.web.dtos.client.mappers.ClientToClientCreateResponseDtoMapper;
 import com.joaoneto.parkinglot.web.dtos.client.mappers.ClientToClientGetResponseDtoMapper;
-import com.joaoneto.parkinglot.web.dtos.client.mappers.ListGetClientDtoMapper;
+import com.joaoneto.parkinglot.web.dtos.client.mappers.PageGetClientDtoMapper;
 import com.joaoneto.parkinglot.web.exceptions.exceptionBody.ExceptionResponseBody;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -20,13 +21,14 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
-import java.util.List;
 
 @Tag(name = "Clients", description = "Client controller for creating and getting clients")
 @RequiredArgsConstructor
@@ -94,16 +96,16 @@ public class ClientController {
             tags = {"Clients"},
             responses = {
                     @ApiResponse(responseCode = "200", description = "Clients Found with success",
-                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ListGetClientDtoMapper.class))),
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = PageGetClientDtoMapper.class))),
                     @ApiResponse(responseCode = "403", description = "Forbidden access",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponseBody.class))),
                     @ApiResponse(responseCode = "401", description = "Unauthorized access")
             })
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<ClientGetResponseDto>> getAllClients(){
-        List<Client> clients = clientService.findAllClients();
-        List<ClientGetResponseDto> response = clients.stream().map(ClientToClientGetResponseDtoMapper.build()).toList();
+    public ResponseEntity<PageGetClientDto> getAllClients(Pageable pageable){
+        Page<Client> clients = clientService.findAllClients(pageable);
+        PageGetClientDto response = PageGetClientDtoMapper.build().apply(clients);
         return ResponseEntity.ok(response);
     }
 
