@@ -6,6 +6,9 @@ import com.joaoneto.parkinglot.web.dtos.user.*;
 import com.joaoneto.parkinglot.web.dtos.user.mappers.*;
 import com.joaoneto.parkinglot.web.exceptions.exceptionBody.ExceptionResponseBody;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -93,7 +96,8 @@ public class UserController {
 
     @Operation(summary = "Get all users", description = "Operation requires a bearer token to access it and only admin users can access it",
             security = @SecurityRequirement(name = "security"),
-            tags = {"Users"}, responses = {
+            tags = {"Users"},
+            responses = {
             @ApiResponse(responseCode = "200", description = "Users found",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ListGetUserDto.class))),
             @ApiResponse(responseCode = "403", description = "Forbidden access",

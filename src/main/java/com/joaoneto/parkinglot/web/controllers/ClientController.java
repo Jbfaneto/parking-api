@@ -14,6 +14,9 @@ import com.joaoneto.parkinglot.web.dtos.client.mappers.ClientToClientGetResponse
 import com.joaoneto.parkinglot.web.dtos.client.mappers.PageGetClientDtoMapper;
 import com.joaoneto.parkinglot.web.exceptions.exceptionBody.ExceptionResponseBody;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -23,6 +26,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -73,14 +77,14 @@ public class ClientController {
     "Operation requires a bearer token to access it with ADMIN Role",
             security = @SecurityRequirement(name = "security"),
             tags = {"Clients"},
-    responses = {
-            @ApiResponse(responseCode = "200", description = "Client Found with success",
+            responses = {
+                @ApiResponse(responseCode = "200", description = "Client Found with success",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ClientGetResponseDto.class))),
-            @ApiResponse(responseCode = "404", description = "Client not found",
+                @ApiResponse(responseCode = "404", description = "Client not found",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponseBody.class))),
-            @ApiResponse(responseCode = "403", description = "Forbidden access",
+                @ApiResponse(responseCode = "403", description = "Forbidden access",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponseBody.class))),
-            @ApiResponse(responseCode = "401", description = "Unauthorized access")
+                @ApiResponse(responseCode = "401", description = "Unauthorized access")
     })
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
@@ -94,6 +98,11 @@ public class ClientController {
             "Operation requires a bearer token to access it with ADMIN Role",
             security = @SecurityRequirement(name = "security"),
             tags = {"Clients"},
+            parameters = {
+                    @Parameter(name = "page", description = "Page number", in = ParameterIn.QUERY, schema = @Schema(type = "integer")),
+                    @Parameter(name = "size", description = "Page size", in = ParameterIn.QUERY, schema = @Schema(type = "integer")),
+                    @Parameter(name = "sort", description = "Sort by field", in = ParameterIn.QUERY, hidden = true, array=@ArraySchema(schema = @Schema(type = "string", defaultValue = "id,asc"))),
+            },
             responses = {
                     @ApiResponse(responseCode = "200", description = "Clients Found with success",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = PageGetClientDtoMapper.class))),
@@ -103,7 +112,7 @@ public class ClientController {
             })
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<PageGetClientDto> getAllClients(Pageable pageable){
+    public ResponseEntity<PageGetClientDto> getAllClients(@Parameter(hidden = true) @PageableDefault(size = 5) Pageable pageable){
         Page<Client> clients = clientService.findAllClients(pageable);
         PageGetClientDto response = PageGetClientDtoMapper.build().apply(clients);
         return ResponseEntity.ok(response);
