@@ -41,7 +41,7 @@ public class ClientIT {
 
     @Test
     public void testCreateClientWithInvalidCpf() {
-       ExceptionResponseBody response = client
+        ExceptionResponseBody response = client
                 .post()
                 .uri("/api/v1/clients")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -52,8 +52,8 @@ public class ClientIT {
                 .expectBody(ExceptionResponseBody.class)
                 .returnResult().getResponseBody();
 
-         org.assertj.core.api.Assertions.assertThat(response).isNotNull();
-         org.assertj.core.api.Assertions.assertThat(response.status()).isEqualTo(400);
+        org.assertj.core.api.Assertions.assertThat(response).isNotNull();
+        org.assertj.core.api.Assertions.assertThat(response.status()).isEqualTo(400);
     }
 
     @Test
@@ -170,13 +170,15 @@ public class ClientIT {
                 .headers(JwtAuthentication.getHeaderAuthorization(client, "admin@email.com", "123456"))
                 .exchange()
                 .expectStatus().isOk()
-                .expectBody(new ParameterizedTypeReference<PageDto<ClientGetResponseDto>>() {})
+                .expectBody(new ParameterizedTypeReference<PageDto<ClientGetResponseDto>>() {
+                })
                 .returnResult().getResponseBody();
 
         org.assertj.core.api.Assertions.assertThat(response).isNotNull();
     }
+
     @Test
-    public void testGetAllClientsUnauthorized(){
+    public void testGetAllClientsUnauthorized() {
         WebTestClient.ResponseSpec response = client
                 .get()
                 .uri("/api/v1/clients")
@@ -193,6 +195,49 @@ public class ClientIT {
                 .get()
                 .uri("/api/v1/clients")
                 .headers(JwtAuthentication.getHeaderAuthorization(client, "nome1@email.com", "123456"))
+                .exchange()
+                .expectStatus().isForbidden()
+                .expectBody(ExceptionResponseBody.class)
+                .returnResult().getResponseBody();
+
+        org.assertj.core.api.Assertions.assertThat(response).isNotNull();
+        org.assertj.core.api.Assertions.assertThat(response.status()).isEqualTo(HttpStatus.FORBIDDEN.value());
+    }
+
+    @Test
+    public void testGetClientDetailsWithSuccess() {
+        ClientGetResponseDto response = client
+                .get()
+                .uri("/api/v1/clients/details")
+                .headers(JwtAuthentication.getHeaderAuthorization(client, "nome1@email.com", "123456"))
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(ClientGetResponseDto.class)
+                .returnResult().getResponseBody();
+
+        org.assertj.core.api.Assertions.assertThat(response).isNotNull();
+        org.assertj.core.api.Assertions.assertThat(response.id()).isEqualTo(10);
+        org.assertj.core.api.Assertions.assertThat(response.name()).isEqualTo("Barbara Mayers");
+    }
+
+    @Test
+    public void testGetClientDetailsUnauthorized() {
+        WebTestClient.ResponseSpec response = client
+                .get()
+                .uri("/api/v1/clients/details")
+                .exchange()
+                .expectStatus().isUnauthorized();
+
+        HttpStatusCode status = response.returnResult(Object.class).getStatus();
+        org.assertj.core.api.Assertions.assertThat(status).isEqualTo(HttpStatus.UNAUTHORIZED);
+    }
+
+    @Test
+    public void testGetClientDetailsForbidden() {
+        ExceptionResponseBody response = client
+                .get()
+                .uri("/api/v1/clients/details")
+                .headers(JwtAuthentication.getHeaderAuthorization(client, "admin@email.com", "123456"))
                 .exchange()
                 .expectStatus().isForbidden()
                 .expectBody(ExceptionResponseBody.class)

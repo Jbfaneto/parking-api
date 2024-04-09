@@ -36,4 +36,9 @@ public class ClientService {
     public Page<Client> findAllClients(Pageable pageable) {
         return clientRepository.findAll(pageable);
     }
+
+
+    public Client findByUserId(long id) {
+        return clientRepository.findByUserId(id);
+    }
 }

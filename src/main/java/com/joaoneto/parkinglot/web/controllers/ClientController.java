@@ -118,4 +118,24 @@ public class ClientController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "Get client details", description = "Resource to get a client details. " +
+            "Operation requires a bearer token to access it with CLIENT Role",
+            security = @SecurityRequirement(name = "security"),
+            tags = {"Clients"},
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Client Found with success",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ClientGetResponseDto.class))),
+                    @ApiResponse(responseCode = "404", description = "Client not found",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponseBody.class))),
+                    @ApiResponse(responseCode = "403", description = "Forbidden access",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponseBody.class))),
+                    @ApiResponse(responseCode = "401", description = "Unauthorized access")
+            })
+    @GetMapping("/details")
+    @PreAuthorize("hasRole('CLIENT')")
+    public ResponseEntity<ClientGetResponseDto> getClientDetails(@AuthenticationPrincipal JwtUserDetails userDetails) {
+        Client client = clientService.findByUserId(userDetails.getId());
+        ClientGetResponseDto response = ClientToClientGetResponseDtoMapper.build().apply(client);
+        return ResponseEntity.ok(response);
+    }
 }
