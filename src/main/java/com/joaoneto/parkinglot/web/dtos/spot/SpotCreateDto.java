@@ -9,7 +9,7 @@ public record SpotCreateDto(
         @Size(min = 4, max = 4)
         String code,
         @NotBlank
-        @Pattern(regexp = "FREE|OCCUPIED")
-        String status
+        @Pattern(regexp = "free|occupied")
+        String spotStatus
 ) {
 }

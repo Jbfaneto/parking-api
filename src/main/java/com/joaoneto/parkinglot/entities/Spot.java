@@ -52,9 +52,9 @@ public class Spot implements Serializable {
     @LastModifiedBy
     private String updatedBy;
 
-    public Spot(String code, String status) {
+    public Spot(String code, SpotStatus status) {
         this.code = code;
-        this.spotStatus = SpotStatus.valueOf(status);
+        this.spotStatus = status;
     }
 
     @Override

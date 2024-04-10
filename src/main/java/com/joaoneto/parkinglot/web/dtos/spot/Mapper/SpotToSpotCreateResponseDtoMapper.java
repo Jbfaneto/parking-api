@@ -12,7 +12,7 @@ public class SpotToSpotCreateResponseDtoMapper implements Function<Spot, SpotCre
 
     @Override
     public SpotCreateResponseDto apply(Spot spot) {
-        String status = spot.getSpotStatus().name().substring("SPOT_".length());
+        String status = spot.getSpotStatus().getStringValue();
         return new SpotCreateResponseDto(spot.getId(), spot.getCode(), status);
     }
 }

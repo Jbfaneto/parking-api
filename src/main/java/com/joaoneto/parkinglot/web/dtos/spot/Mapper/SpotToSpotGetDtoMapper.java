@@ -12,7 +12,7 @@ public class SpotToSpotGetDtoMapper implements Function<Spot, SpotGetDto> {
 
     @Override
     public SpotGetDto apply(Spot spot) {
-        String status = spot.getSpotStatus().name();
+        String status = spot.getSpotStatus().getStringValue();
         return new SpotGetDto(spot.getId(), spot.getCode(), status);
     }
 }
