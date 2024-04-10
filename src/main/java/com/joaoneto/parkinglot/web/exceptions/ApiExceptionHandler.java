@@ -41,6 +41,17 @@ public class ApiExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
     }
 
+    @ExceptionHandler(value = {SpotAlreadyExistsException.class})
+    protected ResponseEntity<ExceptionResponseBody> handleSpotAlreadyExistsException(
+            final SpotAlreadyExistsException exception,
+            final HttpServletRequest request) {
+        final var body = new ExceptionResponseBody(
+                Instant.now(),
+                HttpStatus.CONFLICT.value(),
+                exception.getMessage(),
+                request.getRequestURI());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(body);
+    }
 
     @ExceptionHandler(value = {IllegalPasswordException.class})
     protected ResponseEntity<ExceptionResponseBody> handleIllegalPasswordException(
