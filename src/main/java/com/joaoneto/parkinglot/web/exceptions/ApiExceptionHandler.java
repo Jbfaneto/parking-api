@@ -53,6 +53,19 @@ public class ApiExceptionHandler {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(body);
     }
 
+    @ExceptionHandler(value = {SpotNotFoundException.class})
+    protected ResponseEntity<ExceptionResponseBody> handleSpotNotFoundException(
+            final SpotNotFoundException exception,
+            final HttpServletRequest request) {
+        final var body = new ExceptionResponseBody(
+                Instant.now(),
+                HttpStatus.NOT_FOUND.value(),
+                exception.getMessage(),
+                request.getRequestURI());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
+    }
+
+
     @ExceptionHandler(value = {IllegalPasswordException.class})
     protected ResponseEntity<ExceptionResponseBody> handleIllegalPasswordException(
             final IllegalPasswordException exception,
