@@ -158,6 +158,7 @@ public class SpotIT {
         org.assertj.core.api.Assertions.assertThat(response.status()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
+    @Test
     public void getSpotByCodeWithoutAuthorization() {
         WebTestClient.ResponseSpec response = client
                 .get()
