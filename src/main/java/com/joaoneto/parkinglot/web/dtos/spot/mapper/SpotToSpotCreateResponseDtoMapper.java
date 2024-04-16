@@ -1,4 +1,4 @@
-package com.joaoneto.parkinglot.web.dtos.spot.Mapper;
+package com.joaoneto.parkinglot.web.dtos.spot.mapper;
 
 import com.joaoneto.parkinglot.entities.Spot;
 import com.joaoneto.parkinglot.web.dtos.spot.SpotCreateResponseDto;

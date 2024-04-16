@@ -37,8 +37,13 @@ public class ClientService {
         return clientRepository.findAll(pageable);
     }
 
-
+    @Transactional(readOnly = true)
     public Client findByUserId(long id) {
         return clientRepository.findByUserId(id);
+    }
+
+    @Transactional(readOnly = true)
+    public Client findByCpf(String cpf) {
+        return clientRepository.findByCpf(cpf).orElseThrow(() -> new ClientNotFoundException("Client not found"));
     }
 }

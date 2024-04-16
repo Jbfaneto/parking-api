@@ -1,9 +1,9 @@
 package com.joaoneto.parkinglot.web.controllers;
 
 import com.joaoneto.parkinglot.services.SpotService;
-import com.joaoneto.parkinglot.web.dtos.spot.Mapper.SpotCreateDtoToSpotMapper;
-import com.joaoneto.parkinglot.web.dtos.spot.Mapper.SpotToSpotCreateResponseDtoMapper;
-import com.joaoneto.parkinglot.web.dtos.spot.Mapper.SpotToSpotGetDtoMapper;
+import com.joaoneto.parkinglot.web.dtos.spot.mapper.SpotCreateDtoToSpotMapper;
+import com.joaoneto.parkinglot.web.dtos.spot.mapper.SpotToSpotCreateResponseDtoMapper;
+import com.joaoneto.parkinglot.web.dtos.spot.mapper.SpotToSpotGetDtoMapper;
 import com.joaoneto.parkinglot.web.dtos.spot.SpotCreateDto;
 import com.joaoneto.parkinglot.web.dtos.spot.SpotCreateResponseDto;
 import com.joaoneto.parkinglot.web.dtos.spot.SpotGetDto;
@@ -30,9 +30,9 @@ public class SpotController {
 
     @Operation(summary = "Create a new spot", description = "Resource to create a new spot, " +
             "operation requires a bearer token to access it as an admin",
-            security = @SecurityRequirement(name = "security"),
-            tags = {"Spots"},
-            responses = {
+                security = @SecurityRequirement(name = "security"),
+                tags = {"Spots"},
+                responses = {
                     @ApiResponse(responseCode = "201", description = "Spot created with success",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = SpotCreateResponseDto.class))),
                     @ApiResponse(responseCode = "409", description = "Spot code already exists",

@@ -1,6 +1,7 @@
 package com.joaoneto.parkinglot.services;
 
 import com.joaoneto.parkinglot.entities.Spot;
+import com.joaoneto.parkinglot.entities.enums.SpotStatus;
 import com.joaoneto.parkinglot.repositories.SpotRepository;
 import com.joaoneto.parkinglot.services.exceptions.SpotAlreadyExistsException;
 import com.joaoneto.parkinglot.services.exceptions.SpotNotFoundException;
@@ -26,6 +27,11 @@ public class SpotService {
     @Transactional(readOnly = true)
     public Spot findByCode(String code) {
         return spotRepository.findByCode(code).orElseThrow(() -> new SpotNotFoundException("Spot not found"));
+    }
+
+    @Transactional(readOnly = true)
+    public Spot findByFreeSpot(){
+        return spotRepository.findFirstBySpotStatus(SpotStatus.FREE).orElseThrow(() -> new SpotNotFoundException("No free spots available!"));
     }
 
 }
