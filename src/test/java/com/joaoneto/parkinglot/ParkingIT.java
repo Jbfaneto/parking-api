@@ -185,7 +185,7 @@ public class ParkingIT {
     }
 
     @Test
-    public void getReceipUnauthorized(){
+    public void getReceiptUnauthorized(){
         WebTestClient.ResponseSpec response = client
                 .get()
                 .uri("/api/v1/parking/checkin/20240416-110201")
