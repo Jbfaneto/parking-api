@@ -83,4 +83,40 @@ public class ParkingIT {
 
         org.assertj.core.api.Assertions.assertThat(response).isNotNull();
     }
+
+    @Test
+    public void checkInWithNoCpf(){
+        ExceptionResponseBody response = client
+                .post()
+                .uri("/api/v1/parking/checkin")
+                .contentType(MediaType.APPLICATION_JSON)
+                .headers(JwtAuthentication.getHeaderAuthorization(client, "admin@email.com", "123456"))
+                .bodyValue(new ParkingCreateDto("ABC-1234", "Fiat", "Uno", "while", "39506397805"))
+                .exchange()
+                .expectStatus().isNotFound()
+                .expectBody(ExceptionResponseBody.class)
+                .returnResult()
+                .getResponseBody();
+        org.assertj.core.api.Assertions.assertThat(response).isNotNull();
+        org.assertj.core.api.Assertions.assertThat(response.status()).isEqualTo(HttpStatus.NOT_FOUND.value());
+    }
+
+    @Sql(scripts = "/sql/parking/parking-occupied-insert.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(scripts = "/sql/parking/parking-occupied-delete.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test
+    public void checkInWithAllSpotsOccupied(){
+        ExceptionResponseBody response = client
+                .post()
+                .uri("/api/v1/parking/checkin")
+                .contentType(MediaType.APPLICATION_JSON)
+                .headers(JwtAuthentication.getHeaderAuthorization(client, "admin@email.com", "123456"))
+                .bodyValue(new ParkingCreateDto("ABC-1234", "Fiat", "Uno", "while", "04084865036"))
+                .exchange()
+                .expectStatus().isNotFound()
+                .expectBody(ExceptionResponseBody.class)
+                .returnResult()
+                .getResponseBody();
+        org.assertj.core.api.Assertions.assertThat(response).isNotNull();
+        org.assertj.core.api.Assertions.assertThat(response.status()).isEqualTo(HttpStatus.NOT_FOUND.value());
+    }
 }
