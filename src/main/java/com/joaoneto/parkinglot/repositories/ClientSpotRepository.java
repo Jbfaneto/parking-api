@@ -1,6 +1,9 @@
 package com.joaoneto.parkinglot.repositories;
 
 import com.joaoneto.parkinglot.entities.ClientSpot;
+import com.joaoneto.parkinglot.repositories.projection.ClientSpotProjection;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -12,4 +15,6 @@ public interface ClientSpotRepository extends JpaRepository<ClientSpot, Long> {
 
     @Query("SELECT COUNT(c) FROM ClientSpot c WHERE c.client.cpf = :cpf")
     long countByClientCpf(String cpf);
+
+    Page<ClientSpotProjection> findAllSpotsByClientCpf(String cpf, Pageable pageable);
 }

@@ -7,6 +7,7 @@ import com.joaoneto.parkinglot.web.exceptions.exceptionBody.ExceptionResponseBod
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
@@ -94,7 +95,7 @@ public class ParkingIT {
                 .uri("/api/v1/parking/checkin")
                 .contentType(MediaType.APPLICATION_JSON)
                 .headers(JwtAuthentication.getHeaderAuthorization(client, "admin@email.com", "123456"))
-                .bodyValue(new ParkingCreateDto("ABC-1234", "Fiat", "Uno", "while", "39506397805"))
+                .bodyValue(new ParkingCreateDto("ABC-1234", "Fiat", "Uno", "while", "21681318059"))
                 .exchange()
                 .expectStatus().isNotFound()
                 .expectBody(ExceptionResponseBody.class)
@@ -213,7 +214,7 @@ public class ParkingIT {
         org.assertj.core.api.Assertions.assertThat(response).isNotNull();
         org.assertj.core.api.Assertions.assertThat(response.model()).isEqualTo("Uno");
         org.assertj.core.api.Assertions.assertThat(response.exitTime()).isNotNull();
-        org.assertj.core.api.Assertions.assertThat(response.price()).isEqualTo(BigDecimal.valueOf(11.00).setScale(2, RoundingMode.HALF_EVEN));
+        org.assertj.core.api.Assertions.assertThat(response.price()).isEqualTo(BigDecimal.valueOf(23.25).setScale(2, RoundingMode.HALF_EVEN));
     }
 
     @Test
@@ -264,6 +265,50 @@ public class ParkingIT {
         ExceptionResponseBody response = client
                 .put()
                 .uri("/api/v1/parking/checkout/20240417-102302")
+                .headers(JwtAuthentication.getHeaderAuthorization(client, "nome1@email.com", "123456"))
+                .exchange()
+                .expectStatus().isForbidden()
+                .expectBody(ExceptionResponseBody.class)
+                .returnResult()
+                .getResponseBody();
+
+        org.assertj.core.api.Assertions.assertThat(response).isNotNull();
+        org.assertj.core.api.Assertions.assertThat(response.status()).isEqualTo(HttpStatus.FORBIDDEN.value());
+    }
+
+    @Test
+    public void getAllSpotsByClientCpfWithSuccess() {
+         PageDto<ParkingResponseDto> response = client
+                .get()
+                .uri("/api/v1/parking/cpf/04084865036")
+                .headers(JwtAuthentication.getHeaderAuthorization(client, "admin@email.com", "123456"))
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(new ParameterizedTypeReference<PageDto<ParkingResponseDto>>() {
+                })
+                .returnResult().getResponseBody();
+
+        org.assertj.core.api.Assertions.assertThat(response).isNotNull();
+        org.assertj.core.api.Assertions.assertThat(response.getContent()).isNotEmpty();
+    }
+
+
+    @Test
+    public void getAllSpotsByClientCpfUnauthorized() {
+        WebTestClient.ResponseSpec response = client
+                .get()
+                .uri("/api/v1/parking/cpf/04084865036")
+                .exchange()
+                .expectStatus().isUnauthorized();
+
+        org.assertj.core.api.Assertions.assertThat(response).isNotNull();
+    }
+
+    @Test
+    public void getAllSpotsByClientCpfWithNoContent() {
+        ExceptionResponseBody response = client
+                .get()
+                .uri("/api/v1/parking/cpf/04084865037")
                 .headers(JwtAuthentication.getHeaderAuthorization(client, "nome1@email.com", "123456"))
                 .exchange()
                 .expectStatus().isForbidden()
