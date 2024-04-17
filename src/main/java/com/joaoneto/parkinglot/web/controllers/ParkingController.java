@@ -79,6 +79,20 @@ public class ParkingController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "Check out a car", description = "Resource to check a car out" +
+    "The operation requires a bearer token to access it as an admin.",
+        security = @SecurityRequirement(name = "security"),
+        tags = {"Parking"},
+        responses = {
+            @ApiResponse(responseCode = "200", description = "Car checked out with success",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ParkingResponseDto.class))),
+            @ApiResponse(responseCode = "404", description = "Receipt not found or car already checked out",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponseBody.class))),
+            @ApiResponse(responseCode = "403", description = "Forbidden access",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponseBody.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized access")
+        })
+
     @PutMapping("/checkout/{receipt}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ParkingResponseDto> checkOut(@PathVariable String receipt) {
