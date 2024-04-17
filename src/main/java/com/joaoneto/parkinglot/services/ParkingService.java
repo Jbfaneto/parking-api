@@ -4,9 +4,12 @@ import com.joaoneto.parkinglot.entities.Client;
 import com.joaoneto.parkinglot.entities.ClientSpot;
 import com.joaoneto.parkinglot.entities.Spot;
 import com.joaoneto.parkinglot.entities.enums.SpotStatus;
+import com.joaoneto.parkinglot.utils.ParkingUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import static com.joaoneto.parkinglot.utils.ParkingUtil.generateReceipt;
@@ -32,5 +35,21 @@ public class ParkingService {
         clientSpot.setReceipt(generateReceipt());
 
         return clientSpotService.createClientSpot(clientSpot);
+    }
+
+    @Transactional
+    public ClientSpot checkOut(String receipt) {
+        ClientSpot clientSpotToCheckOut = clientSpotService.findByReceiptAndExitTimeIsNull(receipt);
+
+        LocalDateTime exitTime = LocalDateTime.now();
+        BigDecimal price = ParkingUtil.calculatePrice(clientSpotToCheckOut.getEntryTime(), exitTime);
+        clientSpotToCheckOut.setExitTime(exitTime);
+        clientSpotToCheckOut.setPrice(price);
+        long totalTimesParking = clientSpotService.countByClientCpf(clientSpotToCheckOut.getClient().getCpf());
+        BigDecimal discount = ParkingUtil.CalculateDiscount(price, totalTimesParking);
+        clientSpotToCheckOut.setDiscount(discount);
+        clientSpotToCheckOut.getSpot().setSpotStatus(SpotStatus.FREE);
+
+        return clientSpotService.createClientSpot(clientSpotToCheckOut);
     }
 }

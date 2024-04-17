@@ -23,4 +23,9 @@ public class ClientSpotService {
         return clientSpotRepository.findByReceiptAndExitTimeIsNull(receipt)
                 .orElseThrow(() -> new ClientSpotNotFoundException("Receipt not found or car already checked out"));
     }
+
+    @Transactional(readOnly = true)
+    public long countByClientCpf(String cpf) {
+        return clientSpotRepository.countByClientCpf(cpf);
+    }
 }

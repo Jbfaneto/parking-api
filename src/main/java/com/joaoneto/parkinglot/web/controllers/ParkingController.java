@@ -79,4 +79,12 @@ public class ParkingController {
         return ResponseEntity.ok(response);
     }
 
+    @PutMapping("/checkout/{receipt}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ParkingResponseDto> checkOut(@PathVariable String receipt) {
+        ClientSpot clientSpot =  parkingService.checkOut(receipt);
+        ParkingResponseDto response = ClientSpotToParkingResponseDtoMapper.build().apply(clientSpot);
+        return ResponseEntity.ok(response);
+    }
+
 }
