@@ -2,6 +2,8 @@ package com.joaoneto.parkinglot.services;
 
 import com.joaoneto.parkinglot.entities.ClientSpot;
 import com.joaoneto.parkinglot.repositories.ClientSpotRepository;
+import com.joaoneto.parkinglot.services.exceptions.ClientSpotNotFoundException;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,5 +16,11 @@ public class ClientSpotService {
     @Transactional
     public ClientSpot createClientSpot(ClientSpot clientSpot) {
         return clientSpotRepository.save(clientSpot);
+    }
+
+    @Transactional(readOnly = true)
+    public ClientSpot findByReceiptAndExitTimeIsNull(String receipt) {
+        return clientSpotRepository.findByReceiptAndExitTimeIsNull(receipt)
+                .orElseThrow(() -> new ClientSpotNotFoundException("Receipt not found or car already checked out"));
     }
 }

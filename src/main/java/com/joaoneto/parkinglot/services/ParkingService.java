@@ -33,5 +33,4 @@ public class ParkingService {
 
         return clientSpotService.createClientSpot(clientSpot);
     }
-
 }

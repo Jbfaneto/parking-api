@@ -119,4 +119,80 @@ public class ParkingIT {
         org.assertj.core.api.Assertions.assertThat(response).isNotNull();
         org.assertj.core.api.Assertions.assertThat(response.status()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
+
+    @Test
+    public void getReceiptWithSuccessAsAdmin(){
+        ParkingResponseDto response = client
+                .get()
+                .uri("/api/v1/parking/checkin/20240416-110201")
+                .headers(JwtAuthentication.getHeaderAuthorization(client, "admin@email.com", "123456"))
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(ParkingResponseDto.class)
+                .returnResult()
+                .getResponseBody();
+
+        org.assertj.core.api.Assertions.assertThat(response).isNotNull();
+        org.assertj.core.api.Assertions.assertThat(response.model()).isEqualTo("Uno");
+    }
+
+    @Test
+    public void getReceiptWithSuccessAsClient(){
+        ParkingResponseDto response = client
+                .get()
+                .uri("/api/v1/parking/checkin/20240416-110201")
+                .headers(JwtAuthentication.getHeaderAuthorization(client, "nome1@email.com", "123456"))
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(ParkingResponseDto.class)
+                .returnResult()
+                .getResponseBody();
+
+        org.assertj.core.api.Assertions.assertThat(response).isNotNull();
+        org.assertj.core.api.Assertions.assertThat(response.model()).isEqualTo("Uno");
+    }
+
+
+
+    @Test
+    public void getReceiptWithExitTimeNotNull(){
+        ExceptionResponseBody response = client
+                .get()
+                .uri("/api/v1/parking/checkin/20240416-110202")
+                .headers(JwtAuthentication.getHeaderAuthorization(client, "admin@email.com", "123456"))
+                .exchange()
+                .expectStatus().isNotFound()
+                .expectBody(ExceptionResponseBody.class)
+                .returnResult()
+                .getResponseBody();
+        org.assertj.core.api.Assertions.assertThat(response).isNotNull();
+        org.assertj.core.api.Assertions.assertThat(response.status()).isEqualTo(HttpStatus.NOT_FOUND.value());
+    }
+
+    @Test
+    public void getReceiptWithWrongReceipt(){
+        ExceptionResponseBody response = client
+                .get()
+                .uri("/api/v1/parking/checkin/20240416-110203")
+                .headers(JwtAuthentication.getHeaderAuthorization(client, "admin@email.com", "123456"))
+                .exchange()
+                .expectStatus().isNotFound()
+                .expectBody(ExceptionResponseBody.class)
+                .returnResult()
+                .getResponseBody();
+        org.assertj.core.api.Assertions.assertThat(response).isNotNull();
+        org.assertj.core.api.Assertions.assertThat(response.status()).isEqualTo(HttpStatus.NOT_FOUND.value());
+    }
+
+    @Test
+    public void getReceipUnauthorized(){
+        WebTestClient.ResponseSpec response = client
+                .get()
+                .uri("/api/v1/parking/checkin/20240416-110201")
+                .exchange()
+                .expectStatus().isUnauthorized();
+
+        org.assertj.core.api.Assertions.assertThat(response).isNotNull();
+    }
+
 }

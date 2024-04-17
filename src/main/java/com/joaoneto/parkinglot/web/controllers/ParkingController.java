@@ -2,6 +2,7 @@ package com.joaoneto.parkinglot.web.controllers;
 
 import com.joaoneto.parkinglot.entities.ClientSpot;
 import com.joaoneto.parkinglot.services.ClientService;
+import com.joaoneto.parkinglot.services.ClientSpotService;
 import com.joaoneto.parkinglot.services.ParkingService;
 import com.joaoneto.parkinglot.web.dtos.parking.ParkingCreateDto;
 import com.joaoneto.parkinglot.web.dtos.parking.ParkingResponseDto;
@@ -18,10 +19,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 
@@ -31,6 +29,7 @@ import java.net.URI;
 public class ParkingController {
     private final ParkingService parkingService;
     private final ClientService clientService;
+    private final ClientSpotService clientSpotService;
 
     @Operation(summary = "Check in a car", description = "Resource to check a car in" +
     "The operation requires a bearer token to access it as an admin.",
@@ -60,4 +59,13 @@ public class ParkingController {
         URI uri = URI.create("/api/v1/parking/checkin/" + response.receipt());
         return ResponseEntity.created(uri).body(response);
     }
+
+    @GetMapping("/checkin/{receipt}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CLIENT')")
+    public ResponseEntity<ParkingResponseDto> getReceipt(@PathVariable String receipt) {
+        ClientSpot clientSpot = clientSpotService.findByReceiptAndExitTimeIsNull(receipt);
+        ParkingResponseDto response = ClientSpotToParkingResponseDtoMapper.build().apply(clientSpot);
+        return ResponseEntity.ok(response);
+    }
+
 }

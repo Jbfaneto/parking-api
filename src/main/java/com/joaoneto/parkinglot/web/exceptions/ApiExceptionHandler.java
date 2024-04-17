@@ -41,6 +41,19 @@ public class ApiExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
     }
 
+    @ExceptionHandler(value = {ClientSpotNotFoundException.class})
+    protected ResponseEntity<ExceptionResponseBody> handleClientSpotNotFoundException(
+            final ClientSpotNotFoundException exception,
+            final HttpServletRequest request) {
+        final var body = new ExceptionResponseBody(
+                Instant.now(),
+                HttpStatus.NOT_FOUND.value(),
+                exception.getMessage(),
+                request.getRequestURI());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
+    }
+
+
     @ExceptionHandler(value = {SpotAlreadyExistsException.class})
     protected ResponseEntity<ExceptionResponseBody> handleSpotAlreadyExistsException(
             final SpotAlreadyExistsException exception,
