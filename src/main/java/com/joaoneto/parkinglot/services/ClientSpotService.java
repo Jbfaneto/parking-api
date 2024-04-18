@@ -36,4 +36,9 @@ public class ClientSpotService {
     public Page<ClientSpotProjection> findAllSpotsByClientCpf(String cpf, Pageable pageable) {
         return clientSpotRepository.findAllSpotsByClientCpf(cpf, pageable);
     }
+
+    @Transactional(readOnly = true)
+    public Page<ClientSpotProjection> findAllSpotsByUserId(long id, Pageable pageable) {
+        return clientSpotRepository.findAllSpotsByClientUserId(id, pageable);
+    }
 }

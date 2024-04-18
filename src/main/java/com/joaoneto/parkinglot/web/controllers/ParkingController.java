@@ -1,6 +1,7 @@
 package com.joaoneto.parkinglot.web.controllers;
 
 import com.joaoneto.parkinglot.entities.ClientSpot;
+import com.joaoneto.parkinglot.jwt.JwtUserDetails;
 import com.joaoneto.parkinglot.repositories.projection.ClientSpotProjection;
 import com.joaoneto.parkinglot.services.ClientService;
 import com.joaoneto.parkinglot.services.ClientSpotService;
@@ -24,6 +25,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -124,6 +126,26 @@ public class ParkingController {
                                                           @PageableDefault(size = 5, sort = "entryTime",
                                                           direction = Sort.Direction.ASC) Pageable pageable) {
         Page<ClientSpotProjection> projection = clientSpotService.findAllSpotsByClientCpf(cpf, pageable);
+        return ResponseEntity.ok(projection);
+    }
+
+    @Operation(summary = "Get all parking spots by client ID", description = "Resource to get all parking spots by a client id"
+    + "The operation requires a bearer token to access it as a client.",
+        security = @SecurityRequirement(name = "security"),
+        tags = {"Parking"},
+        responses = {
+            @ApiResponse(responseCode = "200", description = "Parking spots found",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ClientSpotProjection.class))),
+            @ApiResponse(responseCode = "403", description = "Forbidden access",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponseBody.class))),
+            @ApiResponse(responseCode = "401", description = "Unauthorized access")
+        })
+    @GetMapping
+    @PreAuthorize("hasRole('CLIENT')")
+    public ResponseEntity<Page<ClientSpotProjection>> getAllParkingFromClient(@AuthenticationPrincipal JwtUserDetails user,
+                                                                              @PageableDefault(size = 5, sort = "entryTime",
+                                                                              direction = Sort.Direction.ASC) Pageable pageable){
+        Page<ClientSpotProjection> projection = clientSpotService.findAllSpotsByUserId(user.getId(), pageable);
         return ResponseEntity.ok(projection);
     }
 

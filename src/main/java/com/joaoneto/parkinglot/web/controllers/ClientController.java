@@ -131,6 +131,7 @@ public class ClientController {
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExceptionResponseBody.class))),
                     @ApiResponse(responseCode = "401", description = "Unauthorized access")
             })
+
     @GetMapping("/details")
     @PreAuthorize("hasRole('CLIENT')")
     public ResponseEntity<ClientGetResponseDto> getClientDetails(@AuthenticationPrincipal JwtUserDetails userDetails) {

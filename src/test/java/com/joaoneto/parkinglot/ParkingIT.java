@@ -319,4 +319,46 @@ public class ParkingIT {
         org.assertj.core.api.Assertions.assertThat(response).isNotNull();
         org.assertj.core.api.Assertions.assertThat(response.status()).isEqualTo(HttpStatus.FORBIDDEN.value());
     }
+
+    @Test
+    public void getAllSpotsByClientIdWithSuccess() {
+        PageDto<ParkingResponseDto> response = client
+                .get()
+                .uri("/api/v1/parking")
+                .headers(JwtAuthentication.getHeaderAuthorization(client, "nome1@email.com", "123456"))
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(new ParameterizedTypeReference<PageDto<ParkingResponseDto>>() {
+                }).returnResult().getResponseBody();
+
+        org.assertj.core.api.Assertions.assertThat(response).isNotNull();
+        org.assertj.core.api.Assertions.assertThat(response.getContent()).isNotEmpty();
+    }
+
+    @Test
+    public void getAllSpotsByClientIdUnauthorized() {
+        WebTestClient.ResponseSpec response = client
+                .get()
+                .uri("/api/v1/parking")
+                .exchange()
+                .expectStatus().isUnauthorized();
+
+        org.assertj.core.api.Assertions.assertThat(response).isNotNull();
+    }
+
+    @Test
+    public void getAllSpotsByClientIdWithNoContent() {
+        ExceptionResponseBody response = client
+                .get()
+                .uri("/api/v1/parking")
+                .headers(JwtAuthentication.getHeaderAuthorization(client, "admin@email.com", "123456"))
+                .exchange()
+                .expectStatus().isForbidden()
+                .expectBody(ExceptionResponseBody.class)
+                .returnResult()
+                .getResponseBody();
+
+        org.assertj.core.api.Assertions.assertThat(response).isNotNull();
+        org.assertj.core.api.Assertions.assertThat(response.status()).isEqualTo(HttpStatus.FORBIDDEN.value());
+    }
 }

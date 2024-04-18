@@ -17,4 +17,6 @@ public interface ClientSpotRepository extends JpaRepository<ClientSpot, Long> {
     long countByClientCpf(String cpf);
 
     Page<ClientSpotProjection> findAllSpotsByClientCpf(String cpf, Pageable pageable);
+
+    Page<ClientSpotProjection> findAllSpotsByClientUserId(long id, Pageable pageable);
 }
